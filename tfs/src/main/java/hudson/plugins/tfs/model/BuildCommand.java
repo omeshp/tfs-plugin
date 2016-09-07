@@ -19,9 +19,10 @@ import hudson.plugins.tfs.CommitParameterAction;
 import hudson.plugins.tfs.PullRequestParameterAction;
 import hudson.plugins.tfs.TeamBuildDetailsAction;
 import hudson.plugins.tfs.TeamBuildEndpoint;
+import hudson.plugins.tfs.TeamGlobalStatusAction;
 import hudson.plugins.tfs.TeamPullRequestMergedDetailsAction;
-import hudson.plugins.tfs.model.servicehooks.Event;
 import hudson.plugins.tfs.UnsupportedIntegrationAction;
+import hudson.plugins.tfs.model.servicehooks.Event;
 import hudson.plugins.tfs.util.ActionHelper;
 import hudson.plugins.tfs.util.MediaType;
 import jenkins.model.Jenkins;
@@ -124,6 +125,7 @@ public class BuildCommand extends AbstractCommand {
                 final GitCodePushedEventArgs args = GitPushEvent.decodeGitPush(gitPush, event);
                 final Action action = new CommitParameterAction(args);
                 actions.add(action);
+                TeamGlobalStatusAction.addIfApplicable(actions);
             }
             else if ("git.pullrequest.merged".equals(eventType)) {
                 final GitPullRequestEx gitPullRequest = mapper.convertValue(resource, GitPullRequestEx.class);
@@ -137,6 +139,7 @@ public class BuildCommand extends AbstractCommand {
                 final String detailedMessage = event.getDetailedMessage().getText();
                 final Action teamPullRequestMergedDetailsAction = new TeamPullRequestMergedDetailsAction(gitPullRequest, message, detailedMessage, args.collectionUri.toString());
                 actions.add(teamPullRequestMergedDetailsAction);
+                TeamGlobalStatusAction.addIfApplicable(actions);
             }
         }
 

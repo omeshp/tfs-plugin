@@ -10,15 +10,15 @@ import hudson.model.Job;
 import hudson.plugins.git.GitSCM;
 import hudson.plugins.git.GitStatus;
 import hudson.plugins.git.extensions.impl.IgnoreNotifyCommit;
-import hudson.plugins.tfs.CommitParameterAction;
 import hudson.plugins.tfs.TeamCollectionConfiguration;
 import hudson.plugins.tfs.TeamEventsEndpoint;
+import hudson.plugins.tfs.TeamGlobalStatusAction;
 import hudson.plugins.tfs.TeamHookCause;
 import hudson.plugins.tfs.TeamPluginGlobalConfig;
 import hudson.plugins.tfs.TeamPushTrigger;
 import hudson.plugins.tfs.model.servicehooks.Event;
-import hudson.plugins.tfs.util.StringHelper;
 import hudson.plugins.tfs.util.ActionHelper;
+import hudson.plugins.tfs.util.StringHelper;
 import hudson.scm.SCM;
 import hudson.security.ACL;
 import hudson.triggers.SCMTrigger;
@@ -88,6 +88,8 @@ public abstract class AbstractHookEvent {
         List<GitStatus.ResponseContributor> result = new ArrayList<GitStatus.ResponseContributor>();
         final String commit = gitCodePushedEventArgs.commit;
         final URIish uri = gitCodePushedEventArgs.getRepoURIish();
+
+        TeamGlobalStatusAction.addIfApplicable(actions);
 
         // run in high privilege to see all the projects anonymous users don't see.
         // this is safe because when we actually schedule a build, it's a build that can
